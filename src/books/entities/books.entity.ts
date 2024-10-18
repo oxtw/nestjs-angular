@@ -3,8 +3,8 @@ import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
 
 @Entity()
 export class Book {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column({ type: 'text' })
   title: string;
