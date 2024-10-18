@@ -9,7 +9,7 @@ import {
   Put,
   Delete,
 } from '@nestjs/common';
-import { BooksService } from '../books.service';
+import { BooksService } from '../services/books.service';
 import { Book } from '../entities/books.entity';
 
 interface UpdateBookDTO {

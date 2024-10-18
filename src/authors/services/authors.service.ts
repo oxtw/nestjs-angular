@@ -2,15 +2,14 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Author } from '../entities/author.entity';
-import { Book } from '../../books/entities/books.entity';
+import { BooksService } from 'src/books/services/books.service';
 
 @Injectable()
 export class AuthorsService {
   constructor(
     @InjectRepository(Author)
-    private authorRepository: Repository<Author>,
-    @InjectRepository(Book)
-    private bookRepository: Repository<Book>,
+    private readonly authorRepository: Repository<Author>,
+    private readonly booksService: BooksService, // Injetando o BooksService
   ) {}
 
   // Método para criar um autor

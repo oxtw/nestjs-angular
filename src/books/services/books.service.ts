@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Author } from 'src/authors/entities/author.entity';
-import { Book } from './entities/books.entity';
+import { Book } from '../entities/books.entity';
 import { Repository } from 'typeorm';
 
 interface UpdateBookDto {
