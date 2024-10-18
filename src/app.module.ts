@@ -5,6 +5,8 @@ import { Book } from './books/entities/books.entity';
 import { AuthorsController } from './authors/controllers/authors.controller';
 import { AuthorsService } from './authors/services/authors.service';
 import { ConfigModule } from '@nestjs/config';
+import { BooksController } from './books/controllers/books.controller';
+import { BooksService } from './books/books.service';
 
 @Module({
   imports: [
@@ -16,13 +18,10 @@ import { ConfigModule } from '@nestjs/config';
       database: process.env.DATABASE_URL,
       entities: [Book, Author],
       synchronize: true,
-      // extra: {
-      //   connectionTimeout: 30000, // em milissegundos
-      // },
     }),
     TypeOrmModule.forFeature([Book, Author]),
   ],
-  controllers: [AuthorsController],
-  providers: [AuthorsService],
+  controllers: [AuthorsController, BooksController],
+  providers: [AuthorsService, BooksService],
 })
 export class AppModule {}
