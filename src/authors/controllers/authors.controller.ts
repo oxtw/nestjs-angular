@@ -9,9 +9,11 @@ import {
   Delete,
   InternalServerErrorException,
   BadRequestException,
+  Patch,
 } from '@nestjs/common';
 import { AuthorsService } from '../services/authors.service';
 import { Author } from '../entities/author.entity';
+import { UpdateAuthorDto } from '../dto/author.dto';
 
 @Controller('authors')
 export class AuthorsController {
@@ -101,6 +103,31 @@ export class AuthorsController {
       throw new InternalServerErrorException(
         'Error deleting author: ' + error.message,
       );
+    }
+  }
+
+  //Rota que atualiza as informações de um autor e seus livros associados, permitindo modificar os dados do autor e, opcionalmente, atualizar ou criar livros relacionados.
+  @Patch(':id')
+  async UpdateAuthor(
+    @Param('id') id: string,
+    @Body() updateAuthorDto: UpdateAuthorDto,
+  ) {
+    try {
+      const updatedAuthor = await this.authorsService.updateAuthor(
+        id,
+        updateAuthorDto,
+      );
+
+      if (!updatedAuthor) {
+        throw new NotFoundException('Author not found');
+      }
+      return {
+        message: 'Author and books updated successfully',
+        updatedAuthor,
+      };
+    } catch (error) {
+      console.log(error);
+      throw new NotFoundException('Author not found');
     }
   }
 }
