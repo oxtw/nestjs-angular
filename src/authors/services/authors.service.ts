@@ -3,12 +3,18 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Author } from '../entities/author.entity';
 import { BooksService } from 'src/books/services/books.service';
+import { UpdateAuthorDto } from '../dto/author.dto';
+import { Book } from 'src/books/entities/books.entity';
 
 @Injectable()
 export class AuthorsService {
   constructor(
     @InjectRepository(Author)
     private readonly authorRepository: Repository<Author>,
+
+    @InjectRepository(Book)
+    private readonly bookRepository: Repository<Book>,
+
     private readonly booksService: BooksService, // Injetando o BooksService
   ) {}
 
@@ -57,5 +63,54 @@ export class AuthorsService {
     }
 
     await this.authorRepository.delete(author.id);
+  }
+
+  async updateAuthor(
+    id: string,
+    updateAuthorDto: UpdateAuthorDto,
+  ): Promise<Author> {
+    const author = await this.authorRepository.findOne({
+      where: { id },
+      relations: ['books'],
+    });
+
+    if (!author) {
+      throw new NotFoundException('Author not found!');
+    }
+
+    // Atualizando os campos do autor se eles existirem no DTO
+    if (updateAuthorDto.name) {
+      author.name = updateAuthorDto.name;
+    }
+    if (updateAuthorDto.birthDate) {
+      author.birthDate = updateAuthorDto.birthDate;
+    }
+
+    // Atualizando os livros
+    if (updateAuthorDto.books && updateAuthorDto.books.length > 0) {
+      for (const updatedBook of updateAuthorDto.books) {
+        const book = author.books.find((b) => b.id === updatedBook.id);
+        if (book) {
+          // Se o livro já existe, atualiza os campos
+          if (updatedBook.title) {
+            book.title = updatedBook.title;
+          }
+          if (updatedBook.publicationDate) {
+            book.publicationDate = updatedBook.publicationDate;
+          }
+          await this.bookRepository.save(book); // Salva as alterações do livro
+        } else {
+          // Se o livro não existe (sem ID), cria um novo
+          const newBook = this.bookRepository.create({
+            ...updatedBook,
+            author,
+          });
+          author.books.push(newBook);
+          await this.bookRepository.save(newBook);
+        }
+      }
+    }
+    await this.authorRepository.save(author);
+    return author;
   }
 }

@@ -11,12 +11,7 @@ import {
 } from '@nestjs/common';
 import { BooksService } from '../services/books.service';
 import { Book } from '../entities/books.entity';
-
-interface UpdateBookDTO {
-  title?: string;
-  publicationDate?: string;
-  authorId?: string;
-}
+import { UpdateBookDTO } from '../dto/book.dto';
 
 @Controller('books')
 export class BooksController {
@@ -105,6 +100,7 @@ export class BooksController {
     }
   }
 
+  //Rota para deletar um livro por id
   @Delete(':id')
   async remove(@Param('id') id: string): Promise<{ message: string }> {
     try {
@@ -113,6 +109,28 @@ export class BooksController {
     } catch (error) {
       console.log(error);
       throw new BadRequestException('Error when deleting the book');
+    }
+  }
+
+  //Rota ver todos os livros de um author por ID
+  @Get('author/:authorId')
+  async getBooksByAuthor(
+    @Param('authorId') authorId: string,
+  ): Promise<{ message: string; books: Book[] }> {
+    try {
+      const books = await this.bookService.findAllBooksByAuthor(authorId);
+
+      if (!authorId) {
+        throw new BadRequestException('Author not found.');
+      }
+
+      return {
+        message: 'Books found successfully!',
+        books: books,
+      };
+    } catch (error) {
+      console.log(error);
+      throw new BadRequestException('Error finding author.');
     }
   }
 }

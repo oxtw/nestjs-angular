@@ -12,9 +12,6 @@ export class Book {
   @Column({ type: 'date' })
   publicationDate: Date;
 
-  @ManyToOne(() => Author, (author) => author.books, {
-    cascade: true,
-    onDelete: 'SET NULL',
-  })
+  @ManyToOne(() => Author, (author) => author.books, { onDelete: 'CASCADE' })
   author: Author;
 }

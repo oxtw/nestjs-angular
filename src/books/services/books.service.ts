@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Author } from 'src/authors/entities/author.entity';
@@ -92,5 +93,16 @@ export class BooksService {
     }
 
     await this.bookRepository.delete(id);
+  }
+
+  // Método para listar todos os livros de um autor específico
+  async findAllBooksByAuthor(authorId: string): Promise<Book[]> {
+    const author = await this.authorRepository.findOne({ where: { id: authorId }, relations: ['books'] });
+    
+    if (!author) {
+      throw new NotFoundException('Author not found.');
+    }
+
+    return author.books;
   }
 }
